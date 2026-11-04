@@ -1,11 +1,11 @@
 import { InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider';
-import * as z from 'zod';
+import { email, object, string } from 'zod';
 import { USER_POOL_CLIENT_ID, cognito } from '../../lib/cognito';
 import { HttpError, json, parseBody, withHttp } from '../../lib/http';
 
-const schema = z.object({
-  email: z.email(),
-  password: z.string().min(1),
+const schema = object({
+  email: email(),
+  password: string().min(1),
 });
 
 export const handler = withHttp(async (event) => {

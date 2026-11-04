@@ -3,13 +3,14 @@ import {
   AdminListGroupsForUserCommand,
   AdminRemoveUserFromGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-import * as z from 'zod';
+// `enum` is a reserved word, hence the alias
+import { enum as zodEnum, object } from 'zod';
 import { ROLES, getCaller, requireRole } from '../../lib/auth';
 import { USER_POOL_ID, cognito } from '../../lib/cognito';
 import { HttpError, json, parseBody, withHttp } from '../../lib/http';
 
-const schema = z.object({
-  role: z.enum(ROLES),
+const schema = object({
+  role: zodEnum(ROLES),
 });
 
 export const handler = withHttp(async (event) => {

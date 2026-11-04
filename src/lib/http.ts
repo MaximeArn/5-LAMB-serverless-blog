@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import type * as z from 'zod';
+import type { ZodType, infer as Infer } from 'zod';
 
 export class HttpError extends Error {
   constructor(
@@ -37,7 +37,7 @@ export function json(statusCode: number, body: unknown): APIGatewayProxyResult {
   };
 }
 
-export function parseBody<T extends z.ZodType>(event: APIGatewayProxyEvent, schema: T): z.infer<T> {
+export function parseBody<T extends ZodType>(event: APIGatewayProxyEvent, schema: T): Infer<T> {
   let raw: unknown;
   try {
     raw = event.body ? JSON.parse(event.body) : {};

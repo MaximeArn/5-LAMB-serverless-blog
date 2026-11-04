@@ -1,13 +1,13 @@
 import { AdminAddUserToGroupCommand, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
-import * as z from 'zod';
+import { email, object, string } from 'zod';
 import { DEFAULT_ROLE } from '../../lib/auth';
 import { USER_POOL_CLIENT_ID, USER_POOL_ID, cognito } from '../../lib/cognito';
 import { json, parseBody, withHttp } from '../../lib/http';
 
-const schema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
-  name: z.string().trim().min(1).max(100),
+const schema = object({
+  email: email(),
+  password: string().min(8),
+  name: string().trim().min(1).max(100),
 });
 
 export const handler = withHttp(async (event) => {
