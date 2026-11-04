@@ -1,0 +1,168 @@
+# Auth block: Cognito user pool, role groups and the auth/users endpoints
+
+# Validates the ID token sent in the Authorization header before the Lambda runs
+x-cognito-authorizer: &cognitoAuthorizer
+  name: cognitoAuthorizer
+  type: COGNITO_USER_POOLS
+  arn: !GetAtt UserPool.Arn
+
+functions:
+  register:
+    handler: src/functions/auth/register.handler
+    description: Create an account with the guest-author role and email a verification code
+    events:
+      - http:
+          path: auth/register
+          method: post
+          cors: true
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: cognito-idp:AdminAddUserToGroup
+            Resource: !GetAtt UserPool.Arn
+
+  confirmRegistration:
+    handler: src/functions/auth/confirm.handler
+    description: Confirm an account with the emailed verification code
+    events:
+      - http:
+          path: auth/confirm
+          method: post
+          cors: true
+
+  login:
+    handler: src/functions/auth/login.handler
+    description: Exchange email and password for tokens
+    events:
+      - http:
+          path: auth/login
+          method: post
+          cors: true
+
+  refreshToken:
+    handler: src/functions/auth/refresh.handler
+    description: Exchange a refresh token for a new ID token
+    events:
+      - http:
+          path: auth/refresh
+          method: post
+          cors: true
+
+  me:
+    handler: src/functions/auth/me.handler
+    description: Return the profile and role of the authenticated user
+    events:
+      - http:
+          path: auth/me
+          method: get
+          cors: true
+          authorizer: *cognitoAuthorizer
+
+  listUsers:
+    handler: src/functions/users/list.handler
+    description: List users and their role (admin only)
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: cognito-idp:ListUsersInGroup
+            Resource: !GetAtt UserPool.Arn
+
+  updateUserRole:
+    handler: src/functions/users/updateRole.handler
+    description: Change the role of a user (admin only)
+    events:
+      - http:
+          path: users/{userId}/role
+          method: patch
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action:
+              - cognito-idp:AdminListGroupsForUser
+              - cognito-idp:AdminAddUserToGroup
+              - cognito-idp:AdminRemoveUserFromGroup
+            Resource: !GetAtt UserPool.Arn
+
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:service}-${sls:stage}-users
+        # Users sign in with their email; the internal username is their immutable `sub`
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: true
+            RequireUppercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+        AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: verified_email
+              Priority: 1
+
+    UserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:service}-${sls:stage}-api
+        UserPoolId: !Ref UserPool
+        GenerateSecret: false
+        ExplicitAuthFlows:
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        # Login errors do not reveal whether an email is registered
+        PreventUserExistenceErrors: ENABLED
+        IdTokenValidity: 1
+        AccessTokenValidity: 1
+        RefreshTokenValidity: 30
+        TokenValidityUnits:
+          IdToken: hours
+          AccessToken: hours
+          RefreshToken: days
+
+    # One group per role; the group names end up in the `cognito:groups` claim of the ID token
+    AdminGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        UserPoolId: !Ref UserPool
+        GroupName: admin
+        Description: Full access, including user management
+        Precedence: 1
+
+    EditorGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        UserPoolId: !Ref UserPool
+        GroupName: editor
+        Description: Manages and publishes every post
+        Precedence: 2
+
+    GuestAuthorGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        UserPoolId: !Ref UserPool
+        GroupName: guest-author
+        Description: Writes drafts and manages their own posts
+        Precedence: 3
+
+  Outputs:
+    UserPoolId:
+      Value: !Ref UserPool
+    UserPoolClientId:
+      Value: !Ref UserPoolClient

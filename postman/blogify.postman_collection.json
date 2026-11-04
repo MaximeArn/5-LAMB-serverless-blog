@@ -1,0 +1,413 @@
+{
+  "info": {
+    "_postman_id": "6f4c2a1e-8b3d-4e5f-9a7b-1c2d3e4f5a6b",
+    "name": "Blogify API",
+    "description": "API REST de la plateforme de blog headless Blogify.\n\n## Utilisation\n\n1. Dans les variables de la collection, renseigner `email`, `password` et `name`. `baseUrl` pointe sur le stage `dev`.\n2. Lancer **Inscription**, puis copier le code reçu par e-mail dans la variable `code` et lancer **Confirmation**.\n3. Lancer **Connexion** : les scripts enregistrent `idToken` et `refreshToken` dans les variables.\n4. Les routes protégées envoient automatiquement `Authorization: {{idToken}}` (authentification définie au niveau de la collection).\n\nLe rôle est lu dans le token : après un changement de rôle, relancer **Connexion** ou **Rafraîchir le token**.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "Authorization", "type": "string" },
+      { "key": "value", "value": "{{idToken}}", "type": "string" },
+      { "key": "in", "value": "header", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://fzyokm8jq6.execute-api.eu-north-1.amazonaws.com/dev", "type": "string" },
+    { "key": "email", "value": "prenom.nom@exemple.com", "type": "string" },
+    { "key": "password", "value": "Motdepasse1", "type": "string" },
+    { "key": "name", "value": "Prénom Nom", "type": "string" },
+    { "key": "code", "value": "", "type": "string" },
+    { "key": "idToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "targetUserId", "value": "", "type": "string" },
+    { "key": "targetRole", "value": "editor", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Inscription, confirmation, connexion et profil. Toutes les routes sont publiques sauf **Mon profil**.",
+      "item": [
+        {
+          "name": "Inscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('rôle guest-author par défaut', () => pm.expect(body.role).to.eql('guest-author'));",
+                  "",
+                  "if (body.userId) pm.collectionVariables.set('userId', body.userId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"{{name}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Crée un compte avec le rôle `guest-author` et envoie un code de vérification par e-mail.\n\nMot de passe : 8 caractères minimum, avec une majuscule, une minuscule et un chiffre.\n\nErreurs : `400 VALIDATION_ERROR`, `400 INVALID_PASSWORD`, `409 USER_ALREADY_EXISTS`."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirmation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"code\": \"{{code}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/confirm",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "confirm"]
+            },
+            "description": "Valide le compte avec le code reçu par e-mail (à copier dans la variable `code`).\n\nErreurs : `400 INVALID_CODE`, `400 EXPIRED_CODE`."
+          },
+          "response": []
+        },
+        {
+          "name": "Connexion",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('tokens présents', () => {",
+                  "  pm.expect(body.idToken).to.be.a('string');",
+                  "  pm.expect(body.refreshToken).to.be.a('string');",
+                  "});",
+                  "",
+                  "if (body.idToken) {",
+                  "  pm.collectionVariables.set('idToken', body.idToken);",
+                  "  pm.collectionVariables.set('refreshToken', body.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Retourne un `idToken` (valable 1 h, à envoyer dans le header `Authorization`) et un `refreshToken` (valable 30 jours).\n\nErreurs : `401 NOT_AUTHORIZED` (identifiants incorrects), `403 USER_NOT_CONFIRMED`."
+          },
+          "response": []
+        },
+        {
+          "name": "Rafraîchir le token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.idToken) pm.collectionVariables.set('idToken', body.idToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Échange le `refreshToken` contre un nouvel `idToken`, qui reflète le rôle actuel de l'utilisateur.\n\nErreurs : `401 NOT_AUTHORIZED`."
+          },
+          "response": []
+        },
+        {
+          "name": "Mon profil",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('rôle valide', () => pm.expect(body.role).to.be.oneOf(['admin', 'editor', 'guest-author']));",
+                  "",
+                  "if (body.userId) pm.collectionVariables.set('userId', body.userId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Retourne l'identifiant, l'e-mail, le nom et le rôle de l'utilisateur connecté, lus dans le token.\n\nErreurs : `401 UNAUTHORIZED` (token absent, invalide ou expiré)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Utilisateurs (admin)",
+      "description": "Gestion des utilisateurs, réservée au rôle `admin`. Le premier admin se crée depuis la console Cognito.",
+      "item": [
+        {
+          "name": "Lister les utilisateurs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('liste dans items', () => pm.expect(body.items).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Liste les utilisateurs avec leur rôle, leur statut et leur date de création. Copier le `userId` d'un utilisateur dans la variable `targetUserId` pour changer son rôle.\n\nErreurs : `401 UNAUTHORIZED`, `403 FORBIDDEN` (rôle autre qu'admin)."
+          },
+          "response": []
+        },
+        {
+          "name": "Changer le rôle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('nouveau rôle appliqué', () => pm.expect(body.role).to.eql(pm.collectionVariables.get('targetRole')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"{{targetRole}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{targetUserId}}/role",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{targetUserId}}", "role"]
+            },
+            "description": "Attribue le rôle `admin`, `editor` ou `guest-author` à l'utilisateur `targetUserId`. Le changement s'applique aux tokens émis ensuite (prochaine connexion ou rafraîchissement).\n\nErreurs : `400 VALIDATION_ERROR`, `400 CANNOT_CHANGE_OWN_ROLE`, `403 FORBIDDEN`, `404 USER_NOT_FOUND`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cas d'erreur",
+      "description": "Vérifie que l'API renvoie le bon code HTTP et le format d'erreur commun `{ \"error\": { \"code\", \"message\", \"details\"? } }`.",
+      "item": [
+        {
+          "name": "Inscription - corps invalide",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code VALIDATION_ERROR', () => pm.expect(error.code).to.eql('VALIDATION_ERROR'));",
+                  "pm.test('détail par champ', () => {",
+                  "  const fields = error.details.map((d) => d.field);",
+                  "  pm.expect(fields).to.include.members(['email', 'password', 'name']);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pas-un-email\",\n  \"password\": \"court\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Connexion - mauvais mot de passe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code NOT_AUTHORIZED', () => pm.expect(error.code).to.eql('NOT_AUTHORIZED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"MauvaisMotDePasse1\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mon profil - sans token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code UNAUTHORIZED', () => pm.expect(error.code).to.eql('UNAUTHORIZED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Changer son propre rôle (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code CANNOT_CHANGE_OWN_ROLE', () => pm.expect(error.code).to.eql('CANNOT_CHANGE_OWN_ROLE'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"editor\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/role",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "role"]
+            },
+            "description": "À lancer connecté en admin (après **Mon profil**, qui renseigne `userId`). Un utilisateur non admin reçoit `403 FORBIDDEN`."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

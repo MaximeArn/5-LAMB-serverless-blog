@@ -1,0 +1,26 @@
+# API-wide settings shared by every block
+resources:
+  Resources:
+    # Errors raised by API Gateway itself (missing/invalid token, unknown route...)
+    # use the same JSON shape and CORS headers as the Lambda responses
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        RestApiId: !Ref ApiGatewayRestApi
+        ResponseType: DEFAULT_4XX
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseTemplates:
+          application/json: '{"error":{"code":"$context.error.responseType","message":$context.error.messageString}}'
+
+    GatewayResponseDefault5XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        RestApiId: !Ref ApiGatewayRestApi
+        ResponseType: DEFAULT_5XX
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseTemplates:
+          application/json: '{"error":{"code":"$context.error.responseType","message":$context.error.messageString}}'

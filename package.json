@@ -1,0 +1,22 @@
+{
+  "name": "serverless-blog",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Headless blogging platform built on AWS Lambda with the Serverless Framework",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "package": "serverless package",
+    "deploy": "serverless deploy",
+    "remove": "serverless remove",
+    "info": "serverless info"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.1161.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.164",
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2"
+  }
+}

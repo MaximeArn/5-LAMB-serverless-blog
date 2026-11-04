@@ -1,1 +1,3 @@
 /diapos/*
+node_modules
+.serverless/

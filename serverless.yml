@@ -1,0 +1,29 @@
+service: blogify
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  architecture: arm64
+  # The AWS organization of the account only allows eu-north-1
+  region: eu-north-1
+  stage: ${opt:stage, 'dev'}
+  memorySize: 256
+  timeout: 10
+  logRetentionInDays: 14
+  iam:
+    role:
+      # Each function gets its own IAM role holding only the permissions it needs
+      mode: perFunction
+  environment:
+    USER_POOL_ID: !Ref UserPool
+    USER_POOL_CLIENT_ID: !Ref UserPoolClient
+
+# Each block (auth, posts, media) keeps its functions and resources in its own file
+functions:
+  - ${file(./infra/auth.yml):functions}
+
+resources:
+  - ${file(./infra/api.yml):resources}
+  - ${file(./infra/auth.yml):resources}
