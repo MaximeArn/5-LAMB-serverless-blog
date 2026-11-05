@@ -37,6 +37,22 @@ export function json(statusCode: number, body: unknown): APIGatewayProxyResult {
   };
 }
 
+export function noContent(): APIGatewayProxyResult {
+  return { statusCode: 204, headers: { 'Access-Control-Allow-Origin': '*' }, body: '' };
+}
+
+function validate<T extends ZodType>(schema: T, raw: unknown, message: string): Infer<T> {
+  const result = schema.safeParse(raw);
+  if (!result.success) {
+    const details = result.error.issues.map((issue) => ({
+      field: issue.path.join('.'),
+      message: issue.message,
+    }));
+    throw new HttpError(400, 'VALIDATION_ERROR', message, details);
+  }
+  return result.data;
+}
+
 export function parseBody<T extends ZodType>(event: APIGatewayProxyEvent, schema: T): Infer<T> {
   let raw: unknown;
   try {
@@ -44,16 +60,11 @@ export function parseBody<T extends ZodType>(event: APIGatewayProxyEvent, schema
   } catch {
     throw new HttpError(400, 'INVALID_JSON', 'Request body must be valid JSON');
   }
+  return validate(schema, raw, 'Request body is invalid');
+}
 
-  const result = schema.safeParse(raw);
-  if (!result.success) {
-    const details = result.error.issues.map((issue) => ({
-      field: issue.path.join('.'),
-      message: issue.message,
-    }));
-    throw new HttpError(400, 'VALIDATION_ERROR', 'Request body is invalid', details);
-  }
-  return result.data;
+export function parseQuery<T extends ZodType>(event: APIGatewayProxyEvent, schema: T): Infer<T> {
+  return validate(schema, event.queryStringParameters ?? {}, 'Query parameters are invalid');
 }
 
 type Handler = (event: APIGatewayProxyEvent) => Promise<APIGatewayProxyResult>;

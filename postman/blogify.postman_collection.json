@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "6f4c2a1e-8b3d-4e5f-9a7b-1c2d3e4f5a6b",
     "name": "Blogify API",
-    "description": "API REST de la plateforme de blog headless Blogify.\n\n## Utilisation\n\n1. Dans les variables de la collection, renseigner `email`, `password` et `name`. `baseUrl` pointe sur le stage `dev`.\n2. Lancer **Inscription**, puis copier le code reçu par e-mail dans la variable `code` et lancer **Confirmation**.\n3. Lancer **Connexion** : les scripts enregistrent `idToken` et `refreshToken` dans les variables.\n4. Les routes protégées envoient automatiquement `Authorization: {{idToken}}` (authentification définie au niveau de la collection).\n\nLe rôle est lu dans le token : après un changement de rôle, relancer **Connexion** ou **Rafraîchir le token**.",
+    "description": "API REST de la plateforme de blog headless Blogify.\n\n## Utilisation\n\n1. Dans les variables de la collection, renseigner `email`, `password` et `name`. `baseUrl` pointe sur le stage `dev`.\n2. Lancer **Inscription**, puis copier le code reçu par e-mail dans la variable `code` et lancer **Confirmation**.\n3. Lancer **Connexion** : les scripts enregistrent `idToken` et `refreshToken` dans les variables.\n4. Les routes protégées envoient automatiquement `Authorization: {{idToken}}` (authentification définie au niveau de la collection).\n5. **Créer un article** enregistre `postId`, utilisé par les autres requêtes sur les articles.\n\nLe rôle est lu dans le token : après un changement de rôle, relancer **Connexion** ou **Rafraîchir le token**.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -23,7 +23,8 @@
     { "key": "refreshToken", "value": "", "type": "string" },
     { "key": "userId", "value": "", "type": "string" },
     { "key": "targetUserId", "value": "", "type": "string" },
-    { "key": "targetRole", "value": "editor", "type": "string" }
+    { "key": "targetRole", "value": "editor", "type": "string" },
+    { "key": "postId", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -273,6 +274,301 @@
       ]
     },
     {
+      "name": "Articles (public)",
+      "description": "Lecture des articles publiés, sans authentification. Les brouillons ne sont jamais visibles ici.",
+      "item": [
+        {
+          "name": "Lister les articles publiés",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('liste dans items', () => pm.expect(body.items).to.be.an('array'));",
+                  "pm.test('pas de content dans la liste', () => body.items.forEach((post) => pm.expect(post).to.not.have.property('content')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                { "key": "limit", "value": "20" },
+                { "key": "nextToken", "value": "", "disabled": true }
+              ]
+            },
+            "description": "Articles publiés, du plus récent au plus ancien, sans le champ `content`. `limit` : 1 à 100 (20 par défaut). Si la réponse contient `nextToken`, le passer en paramètre pour obtenir la page suivante.\n\nErreurs : `400 VALIDATION_ERROR`, `400 INVALID_NEXT_TOKEN`."
+          },
+          "response": []
+        },
+        {
+          "name": "Lire un article publié",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('article publié avec son contenu', () => {",
+                  "  pm.expect(body.status).to.eql('published');",
+                  "  pm.expect(body.content).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "{{postId}}"]
+            },
+            "description": "Article complet, uniquement s'il est publié.\n\nErreurs : `404 POST_NOT_FOUND` (inexistant ou brouillon)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Articles (gestion)",
+      "description": "Gestion des articles, authentifiée. Un `guest-author` gère ses propres articles, sans pouvoir publier ; un `editor` ou un `admin` gère tous les articles.",
+      "item": [
+        {
+          "name": "Créer un article",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('créé en brouillon', () => pm.expect(body.status).to.eql('draft'));",
+                  "",
+                  "if (body.postId) pm.collectionVariables.set('postId', body.postId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mon premier article\",\n  \"content\": \"# Bonjour\\n\\nContenu en **Markdown**.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts"]
+            },
+            "description": "Crée un brouillon dont l'auteur est l'utilisateur connecté. `title` : 1 à 200 caractères ; `content` : 100 000 caractères maximum.\n\nErreurs : `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`."
+          },
+          "response": []
+        },
+        {
+          "name": "Lister les articles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('liste dans items', () => pm.expect(body.items).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts"],
+              "query": [
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "draft", "disabled": true },
+                { "key": "nextToken", "value": "", "disabled": true }
+              ]
+            },
+            "description": "`guest-author` : ses propres articles, tous statuts (filtrable avec `status`). `editor` / `admin` : tous les articles du statut demandé, `draft` par défaut (la file de relecture). Pagination comme la liste publique.\n\nErreurs : `400 VALIDATION_ERROR`, `400 INVALID_NEXT_TOKEN`, `401 UNAUTHORIZED`."
+          },
+          "response": []
+        },
+        {
+          "name": "Lire un article",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts", "{{postId}}"]
+            },
+            "description": "Article complet, quel que soit son statut.\n\nErreurs : `403 FORBIDDEN` (article d'un autre auteur pour un `guest-author`), `404 POST_NOT_FOUND`."
+          },
+          "response": []
+        },
+        {
+          "name": "Modifier un article",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mon premier article (relu)\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts", "{{postId}}"]
+            },
+            "description": "Modifie `title` et/ou `content`. Un article publié modifié par un `guest-author` repasse en brouillon.\n\nErreurs : `400 VALIDATION_ERROR`, `403 FORBIDDEN`, `404 POST_NOT_FOUND`, `409 POST_CONFLICT` (modifié entre-temps : recharger puis réessayer)."
+          },
+          "response": []
+        },
+        {
+          "name": "Publier un article",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('publié', () => {",
+                  "  pm.expect(body.status).to.eql('published');",
+                  "  pm.expect(body.publishedAt).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"published\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts/{{postId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts", "{{postId}}", "status"]
+            },
+            "description": "Réservé aux rôles `editor` et `admin`. Une republication conserve la date de première publication (`publishedAt`).\n\nErreurs : `403 FORBIDDEN`, `404 POST_NOT_FOUND`, `409 POST_CONFLICT`."
+          },
+          "response": []
+        },
+        {
+          "name": "Dépublier un article",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('repassé en brouillon', () => pm.expect(body.status).to.eql('draft'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"draft\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts/{{postId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts", "{{postId}}", "status"]
+            },
+            "description": "Réservé aux rôles `editor` et `admin`. L'article disparaît de la lecture publique.\n\nErreurs : `403 FORBIDDEN`, `404 POST_NOT_FOUND`, `409 POST_CONFLICT`."
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer un article",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts", "{{postId}}"]
+            },
+            "description": "Supprime définitivement l'article.\n\nErreurs : `403 FORBIDDEN`, `404 POST_NOT_FOUND`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Cas d'erreur",
       "description": "Vérifie que l'API renvoie le bon code HTTP et le format d'erreur commun `{ \"error\": { \"code\", \"message\", \"details\"? } }`.",
       "item": [
@@ -404,6 +700,128 @@
               "path": ["users", "{{userId}}", "role"]
             },
             "description": "À lancer connecté en admin (après **Mon profil**, qui renseigne `userId`). Un utilisateur non admin reçoit `403 FORBIDDEN`."
+          },
+          "response": []
+        },
+        {
+          "name": "Créer un article - corps invalide",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code VALIDATION_ERROR', () => pm.expect(error.code).to.eql('VALIDATION_ERROR'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Lister les articles - limit invalide",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('erreur sur limit', () => pm.expect(error.details[0].field).to.eql('limit'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?limit=500",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [{ "key": "limit", "value": "500" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Lire un article inexistant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code POST_NOT_FOUND', () => pm.expect(error.code).to.eql('POST_NOT_FOUND'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Publier en guest-author",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 Forbidden', () => pm.response.to.have.status(403));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code FORBIDDEN', () => pm.expect(error.code).to.eql('FORBIDDEN'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"published\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/posts/{{postId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "posts", "{{postId}}", "status"]
+            },
+            "description": "À lancer connecté avec un compte `guest-author`."
           },
           "response": []
         }

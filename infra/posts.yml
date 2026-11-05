@@ -1,0 +1,182 @@
+# Posts block: DynamoDB table, public read endpoints (/posts) and management endpoints (/manage/posts)
+
+# Same authorizer as the auth block: Serverless creates it once since the name is identical
+x-cognito-authorizer: &cognitoAuthorizer
+  name: cognitoAuthorizer
+  type: COGNITO_USER_POOLS
+  arn: !GetAtt UserPool.Arn
+
+functions:
+  listPublishedPosts:
+    handler: src/functions/posts/listPublished.handler
+    description: List published posts, newest first (public)
+    events:
+      - http:
+          path: posts
+          method: get
+          cors: true
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: dynamodb:Query
+            Resource: !Join ['/', [!GetAtt PostsTable.Arn, 'index', 'byStatus']]
+
+  getPublishedPost:
+    handler: src/functions/posts/getPublished.handler
+    description: Get a published post (public)
+    events:
+      - http:
+          path: posts/{postId}
+          method: get
+          cors: true
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: dynamodb:GetItem
+            Resource: !GetAtt PostsTable.Arn
+
+  listPosts:
+    handler: src/functions/posts/list.handler
+    description: List the posts the caller manages, any status
+    events:
+      - http:
+          path: manage/posts
+          method: get
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: dynamodb:Query
+            Resource:
+              - !Join ['/', [!GetAtt PostsTable.Arn, 'index', 'byStatus']]
+              - !Join ['/', [!GetAtt PostsTable.Arn, 'index', 'byAuthor']]
+
+  getPost:
+    handler: src/functions/posts/get.handler
+    description: Get a post the caller manages, any status
+    events:
+      - http:
+          path: manage/posts/{postId}
+          method: get
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: dynamodb:GetItem
+            Resource: !GetAtt PostsTable.Arn
+
+  createPost:
+    handler: src/functions/posts/create.handler
+    description: Create a draft post
+    events:
+      - http:
+          path: manage/posts
+          method: post
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: !GetAtt PostsTable.Arn
+
+  updatePost:
+    handler: src/functions/posts/update.handler
+    description: Update the title and/or content of a post
+    events:
+      - http:
+          path: manage/posts/{postId}
+          method: patch
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+            Resource: !GetAtt PostsTable.Arn
+
+  deletePost:
+    handler: src/functions/posts/remove.handler
+    description: Delete a post
+    events:
+      - http:
+          path: manage/posts/{postId}
+          method: delete
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:DeleteItem
+            Resource: !GetAtt PostsTable.Arn
+
+  updatePostStatus:
+    handler: src/functions/posts/updateStatus.handler
+    description: Publish or unpublish a post (editor and admin)
+    events:
+      - http:
+          path: manage/posts/{postId}/status
+          method: patch
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+            Resource: !GetAtt PostsTable.Arn
+
+resources:
+  Resources:
+    PostsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${sls:stage}-posts
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: postId
+            AttributeType: S
+          - AttributeName: status
+            AttributeType: S
+          - AttributeName: authorId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: postId
+            KeyType: HASH
+        # Both indexes leave `content` out so that list queries read small items
+        GlobalSecondaryIndexes:
+          - IndexName: byStatus
+            KeySchema:
+              - AttributeName: status
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: INCLUDE
+              NonKeyAttributes: [title, authorId, authorName, updatedAt, publishedAt]
+          - IndexName: byAuthor
+            KeySchema:
+              - AttributeName: authorId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: INCLUDE
+              NonKeyAttributes: [title, status, authorName, updatedAt, publishedAt]
