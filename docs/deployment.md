@@ -18,6 +18,12 @@ npm run info                      # URL de l'API et liste des routes
 npm run remove                    # supprime toute la stack
 ```
 
+Le bucket des médias s'appelle `blogify-<stage>-media-<id du compte AWS>`. CloudFormation ne supprime pas un bucket qui contient des fichiers : le vider avant `npm run remove`.
+
+```bash
+aws s3 rm s3://blogify-dev-media-<id du compte AWS> --recursive --region eu-north-1
+```
+
 ## Créer le premier admin
 
 Seul un admin peut changer un rôle via l'API, donc le premier se crée à la main :

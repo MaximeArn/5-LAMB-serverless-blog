@@ -20,13 +20,29 @@ provider:
     USER_POOL_ID: !Ref UserPool
     USER_POOL_CLIENT_ID: !Ref UserPoolClient
     POSTS_TABLE: !Ref PostsTable
+    MEDIA_BUCKET: ${self:custom.mediaBucket}
+
+custom:
+  # Bucket names are shared by all AWS accounts: the account id keeps it unique
+  mediaBucket: ${self:service}-${sls:stage}-media-${aws:accountId}
+
+build:
+  esbuild:
+    # The SDK is left to the Lambda runtime, except the S3 presigners that it may
+    # not ship: they are bundled together with the S3 client they rely on
+    external:
+      - '!@aws-sdk/client-s3'
+      - '!@aws-sdk/s3-presigned-post'
+      - '!@aws-sdk/s3-request-presigner'
 
 # Each block (auth, posts, media) keeps its functions and resources in its own file
 functions:
   - ${file(./infra/auth.yml):functions}
   - ${file(./infra/posts.yml):functions}
+  - ${file(./infra/media.yml):functions}
 
 resources:
   - ${file(./infra/api.yml):resources}
   - ${file(./infra/auth.yml):resources}
   - ${file(./infra/posts.yml):resources}
+  - ${file(./infra/media.yml):resources}

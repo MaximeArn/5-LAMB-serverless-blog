@@ -1,7 +1,9 @@
 import { enum as zodEnum } from "zod";
 import { getCaller } from "../../lib/auth";
+import { POSTS_TABLE } from "../../lib/dynamo";
 import { json, parseQuery, withHttp } from "../../lib/http";
-import { POST_STATUSES, paginationSchema, queryPage } from "../../lib/posts";
+import { paginationSchema, queryPage } from "../../lib/pagination";
+import { POST_STATUSES } from "../../lib/posts";
 
 const schema = paginationSchema.extend({
   status: zodEnum(POST_STATUSES).optional(),
@@ -26,6 +28,7 @@ export const handler = withHttp(async (event) => {
 
     const page = await queryPage(
       {
+        TableName: POSTS_TABLE,
         IndexName: "byAuthor",
         KeyConditionExpression: "authorId = :authorId",
         ScanIndexForward: false,
@@ -40,6 +43,7 @@ export const handler = withHttp(async (event) => {
   // Editors and admins list every post of a status, drafts (the review queue) by default
   const page = await queryPage(
     {
+      TableName: POSTS_TABLE,
       IndexName: "byStatus",
       KeyConditionExpression: "#status = :status",
       ExpressionAttributeNames: { "#status": "status" },

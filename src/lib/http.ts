@@ -41,6 +41,18 @@ export function noContent(): APIGatewayProxyResult {
   return { statusCode: 204, headers: { 'Access-Control-Allow-Origin': '*' }, body: '' };
 }
 
+export function redirect(location: string, maxAgeSeconds: number): APIGatewayProxyResult {
+  return {
+    statusCode: 302,
+    headers: {
+      Location: location,
+      'Cache-Control': `private, max-age=${maxAgeSeconds}`,
+      'Access-Control-Allow-Origin': '*',
+    },
+    body: '',
+  };
+}
+
 function validate<T extends ZodType>(schema: T, raw: unknown, message: string): Infer<T> {
   const result = schema.safeParse(raw);
   if (!result.success) {

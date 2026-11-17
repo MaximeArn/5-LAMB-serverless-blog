@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "6f4c2a1e-8b3d-4e5f-9a7b-1c2d3e4f5a6b",
     "name": "Blogify API",
-    "description": "API REST de la plateforme de blog headless Blogify.\n\n## Utilisation\n\n1. Dans les variables de la collection, renseigner `email`, `password` et `name`. `baseUrl` pointe sur le stage `dev`.\n2. Lancer **Inscription**, puis copier le code reçu par e-mail dans la variable `code` et lancer **Confirmation**.\n3. Lancer **Connexion** : les scripts enregistrent `idToken` et `refreshToken` dans les variables.\n4. Les routes protégées envoient automatiquement `Authorization: {{idToken}}` (authentification définie au niveau de la collection).\n5. **Créer un article** enregistre `postId`, utilisé par les autres requêtes sur les articles.\n\nLe rôle est lu dans le token : après un changement de rôle, relancer **Connexion** ou **Rafraîchir le token**.",
+    "description": "API REST de la plateforme de blog headless Blogify.\n\n## Utilisation\n\n1. Dans les variables de la collection, renseigner `email`, `password` et `name`. `baseUrl` pointe sur le stage `dev`.\n2. Lancer **Inscription**, puis copier le code reçu par e-mail dans la variable `code` et lancer **Confirmation**.\n3. Lancer **Connexion** : les scripts enregistrent `idToken` et `refreshToken` dans les variables.\n4. Les routes protégées envoient automatiquement `Authorization: {{idToken}}` (authentification définie au niveau de la collection).\n5. **Créer un article** enregistre `postId`, utilisé par les autres requêtes sur les articles.\n6. **Demander une URL d'envoi** enregistre `mediaOwnerId`, `mediaId` et le formulaire S3 ; **Envoyer le fichier sur S3** l'utilise (choisir le fichier dans le champ `file`).\n\nLe rôle est lu dans le token : après un changement de rôle, relancer **Connexion** ou **Rafraîchir le token**.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -24,7 +24,10 @@
     { "key": "userId", "value": "", "type": "string" },
     { "key": "targetUserId", "value": "", "type": "string" },
     { "key": "targetRole", "value": "editor", "type": "string" },
-    { "key": "postId", "value": "", "type": "string" }
+    { "key": "postId", "value": "", "type": "string" },
+    { "key": "mediaId", "value": "", "type": "string" },
+    { "key": "mediaOwnerId", "value": "", "type": "string" },
+    { "key": "uploadUrl", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -569,6 +572,181 @@
       ]
     },
     {
+      "name": "Médias",
+      "description": "Le fichier ne passe pas par l'API : elle délivre un formulaire signé, puis le client envoie le fichier directement à S3. Images (JPEG, PNG, WebP, GIF) jusqu'à 10 Mo, vidéos (MP4, WebM) jusqu'à 100 Mo.",
+      "item": [
+        {
+          "name": "Demander une URL d'envoi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('formulaire S3 fourni', () => pm.expect(body.upload.fields).to.have.property('Policy'));",
+                  "",
+                  "// Stores the S3 form fields for « Envoyer le fichier sur S3 »",
+                  "if (body.mediaId) {",
+                  "  pm.collectionVariables.set('mediaId', body.mediaId);",
+                  "  pm.collectionVariables.set('mediaOwnerId', body.ownerId);",
+                  "  pm.collectionVariables.set('uploadUrl', body.upload.url);",
+                  "  for (const [name, value] of Object.entries(body.upload.fields)) {",
+                  "    pm.collectionVariables.set('upload_' + name.replace(/[^A-Za-z0-9]/g, '_'), value);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"photo.jpg\",\n  \"contentType\": \"image/jpeg\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/media",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "media"]
+            },
+            "description": "N'écrit rien : renvoie `upload`, l'URL S3 et les champs du formulaire signé, valables 5 minutes. Le média n'existe qu'une fois le fichier reçu par S3. `url` est son adresse publique.\n\n`contentType` : `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `video/mp4` ou `video/webm`.\n\nErreurs : `400 VALIDATION_ERROR`, `401 UNAUTHORIZED`."
+          },
+          "response": []
+        },
+        {
+          "name": "Envoyer le fichier sur S3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204 No Content (fichier reçu par S3)', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "key", "value": "{{upload_key}}", "type": "text" },
+                { "key": "Content-Type", "value": "{{upload_Content_Type}}", "type": "text" },
+                { "key": "Content-Disposition", "value": "{{upload_Content_Disposition}}", "type": "text" },
+                { "key": "bucket", "value": "{{upload_bucket}}", "type": "text" },
+                { "key": "X-Amz-Algorithm", "value": "{{upload_X_Amz_Algorithm}}", "type": "text" },
+                { "key": "X-Amz-Credential", "value": "{{upload_X_Amz_Credential}}", "type": "text" },
+                { "key": "X-Amz-Date", "value": "{{upload_X_Amz_Date}}", "type": "text" },
+                { "key": "X-Amz-Security-Token", "value": "{{upload_X_Amz_Security_Token}}", "type": "text" },
+                { "key": "Policy", "value": "{{upload_Policy}}", "type": "text" },
+                { "key": "X-Amz-Signature", "value": "{{upload_X_Amz_Signature}}", "type": "text" },
+                { "key": "file", "type": "file", "src": [] }
+              ]
+            },
+            "url": {
+              "raw": "{{uploadUrl}}",
+              "host": ["{{uploadUrl}}"]
+            },
+            "description": "Requête envoyée à S3, pas à l'API : pas de token. Choisir le fichier dans le champ `file`, qui doit rester le dernier. Son type doit correspondre au `contentType` demandé.\n\nLe `204` de S3 confirme l'envoi : le média est aussitôt lisible. S3 répond `403` si le formulaire a expiré, si le type diffère, ou si le fichier dépasse la taille autorisée."
+          },
+          "response": []
+        },
+        {
+          "name": "Lister mes médias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('liste dans items', () => pm.expect(body.items).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/manage/media?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "media"],
+              "query": [
+                { "key": "limit", "value": "20" },
+                { "key": "nextToken", "value": "", "disabled": true }
+              ]
+            },
+            "description": "Médias envoyés par l'utilisateur connecté, du plus récent au plus ancien, avec leur taille, leur date d'envoi et leur URL publique. Pagination comme les articles.\n\nErreurs : `400 VALIDATION_ERROR`, `400 INVALID_NEXT_TOKEN`, `401 UNAUTHORIZED`."
+          },
+          "response": []
+        },
+        {
+          "name": "Lire un média",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Postman follows the 302 redirect to the presigned S3 URL",
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('fichier image ou vidéo', () => pm.expect(pm.response.headers.get('Content-Type')).to.match(/^(image|video)\\//));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/media/{{mediaOwnerId}}/{{mediaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "{{mediaOwnerId}}", "{{mediaId}}"]
+            },
+            "description": "Public. Redirige (`302`) vers une URL S3 signée valable 15 minutes : utilisable directement dans `<img src>` ou en Markdown.\n\nErreurs : `404 MEDIA_NOT_FOUND` (aucun fichier à cette adresse)."
+          },
+          "response": []
+        },
+        {
+          "name": "Supprimer un média",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/manage/media/{{mediaOwnerId}}/{{mediaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "media", "{{mediaOwnerId}}", "{{mediaId}}"]
+            },
+            "description": "Supprime le fichier. Propriétaire, `editor` ou `admin`. Répond `204` même si le fichier n'existe plus : l'appel peut être rejoué sans risque.\n\nErreurs : `403 FORBIDDEN`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Cas d'erreur",
       "description": "Vérifie que l'API renvoie le bon code HTTP et le format d'erreur commun `{ \"error\": { \"code\", \"message\", \"details\"? } }`.",
       "item": [
@@ -822,6 +1000,66 @@
               "path": ["manage", "posts", "{{postId}}", "status"]
             },
             "description": "À lancer connecté avec un compte `guest-author`."
+          },
+          "response": []
+        },
+        {
+          "name": "Demander une URL d'envoi - type refusé",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('erreur sur contentType', () => pm.expect(error.details[0].field).to.eql('contentType'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"document.pdf\",\n  \"contentType\": \"application/pdf\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manage/media",
+              "host": ["{{baseUrl}}"],
+              "path": ["manage", "media"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Lire un média inexistant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "",
+                  "const { error } = pm.response.json();",
+                  "pm.test('code MEDIA_NOT_FOUND', () => pm.expect(error.code).to.eql('MEDIA_NOT_FOUND'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/media/{{mediaOwnerId}}/inexistant",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "{{mediaOwnerId}}", "inexistant"]
+            }
           },
           "response": []
         }

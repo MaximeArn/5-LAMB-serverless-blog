@@ -1,0 +1,102 @@
+# Media block: private S3 bucket, the only store of the media, and the media endpoints
+
+# Same authorizer as the other blocks: Serverless creates it once since the name is identical
+x-cognito-authorizer: &cognitoAuthorizer
+  name: cognitoAuthorizer
+  type: COGNITO_USER_POOLS
+  arn: !GetAtt UserPool.Arn
+
+functions:
+  createMediaUpload:
+    handler: src/functions/media/createUpload.handler
+    description: Return a presigned form to upload a file straight to S3
+    events:
+      - http:
+          path: manage/media
+          method: post
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          # The presigned form is signed with this role: S3 checks its permissions
+          - Effect: Allow
+            Action: s3:PutObject
+            Resource: arn:aws:s3:::${self:custom.mediaBucket}/media/*
+
+  listMedia:
+    handler: src/functions/media/list.handler
+    description: List the media uploaded by the caller
+    events:
+      - http:
+          path: manage/media
+          method: get
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: s3:ListBucket
+            Resource: arn:aws:s3:::${self:custom.mediaBucket}
+            Condition:
+              StringLike:
+                s3:prefix: media/*
+
+  getMedia:
+    handler: src/functions/media/get.handler
+    description: Redirect to a presigned URL of the file (public)
+    events:
+      - http:
+          path: media/{ownerId}/{mediaId}
+          method: get
+          cors: true
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource: arn:aws:s3:::${self:custom.mediaBucket}/media/*
+          # Without it, S3 answers 403 instead of 404 for a missing file
+          - Effect: Allow
+            Action: s3:ListBucket
+            Resource: arn:aws:s3:::${self:custom.mediaBucket}
+            Condition:
+              StringLike:
+                s3:prefix: media/*
+
+  deleteMedia:
+    handler: src/functions/media/remove.handler
+    description: Delete a media file
+    events:
+      - http:
+          path: manage/media/{ownerId}/{mediaId}
+          method: delete
+          cors: true
+          authorizer: *cognitoAuthorizer
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action: s3:DeleteObject
+            Resource: arn:aws:s3:::${self:custom.mediaBucket}/media/*
+
+resources:
+  Resources:
+    # Same logical id as the bucket Serverless created for the former S3 trigger,
+    # so that CloudFormation updates it in place instead of replacing it
+    S3BucketMedia:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.mediaBucket}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        # Browsers upload straight to S3 through the presigned POST form
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods: [POST]
+              AllowedOrigins: ['*']
+              AllowedHeaders: ['*']

@@ -10,4 +10,5 @@ Projet SUPINFO 5LAMB — Baptiste CHAPIT & Maxime ANOULD.
 - [Déploiement](docs/deployment.md)
 - [API : authentification et utilisateurs](docs/api-auth.md)
 - [API : articles](docs/api-posts.md)
+- [API : médias](docs/api-media.md)
 - [Collection Postman](postman/blogify.postman_collection.json) (à importer dans Postman)

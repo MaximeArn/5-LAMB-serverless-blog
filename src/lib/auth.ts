@@ -42,6 +42,11 @@ export function getCaller(event: APIGatewayProxyEvent): Caller {
   };
 }
 
+// Editors and admins manage every post and media, a guest author only their own
+export function canManage(caller: Caller, ownerId: string): boolean {
+  return caller.role !== 'guest-author' || ownerId === caller.userId;
+}
+
 export function requireRole(caller: Caller, ...allowed: Role[]): void {
   if (!allowed.includes(caller.role)) {
     throw new HttpError(403, 'FORBIDDEN', `This action requires the role: ${allowed.join(' or ')}`);

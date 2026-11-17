@@ -1,107 +1,131 @@
-<mxfile host="app.diagrams.net">
+<mxfile host="65bd71144e">
   <diagram id="architecture" name="Architecture">
-    <mxGraphModel dx="1240" dy="1240" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="1240" math="0" shadow="0">
+    <mxGraphModel dx="1369" dy="424" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="1580" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <mxCell id="client" value="Client&lt;br&gt;(front-end, Postman)" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.users;" vertex="1" parent="1">
-          <mxGeometry x="60" y="530" width="78" height="78" as="geometry" />
+        <mxCell id="client" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.users;" value="Client&lt;br&gt;(front-end, Postman)" vertex="1">
+          <mxGeometry height="78" width="78" x="60" y="530" as="geometry" />
         </mxCell>
-
-        <mxCell id="cloud" value="AWS" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud_alt;strokeColor=#232F3E;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#232F3E;dashed=0;" vertex="1" parent="1">
-          <mxGeometry x="180" y="40" width="1060" height="1140" as="geometry" />
+        <mxCell id="cloud" parent="1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud_alt;strokeColor=#232F3E;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#232F3E;dashed=0;" value="AWS" vertex="1">
+          <mxGeometry height="1480" width="1060" x="180" y="40" as="geometry" />
         </mxCell>
-
-        <mxCell id="region" value="eu-north-1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;strokeColor=#00A4A6;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;dashed=1;" vertex="1" parent="cloud">
-          <mxGeometry x="20" y="40" width="1020" height="1060" as="geometry" />
+        <mxCell id="region" parent="cloud" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;strokeColor=#00A4A6;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;dashed=1;" value="eu-north-1" vertex="1">
+          <mxGeometry height="1400" width="1020" x="20" y="40" as="geometry" />
         </mxCell>
-
-        <mxCell id="apigw" value="API Gateway (REST)&lt;br&gt;stage dev" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#FF4F8B;gradientDirection=north;fillColor=#BC1356;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;" vertex="1" parent="region">
-          <mxGeometry x="60" y="450" width="78" height="78" as="geometry" />
+        <mxCell id="apigw" parent="region" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#FF4F8B;gradientDirection=north;fillColor=#BC1356;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;" value="API Gateway (REST)&lt;br&gt;stage dev" vertex="1">
+          <mxGeometry height="78" width="78" x="60" y="450" as="geometry" />
         </mxCell>
-
-        <mxCell id="iam" value="IAM&lt;br&gt;1 rôle par fonction Lambda" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F54749;gradientDirection=north;fillColor=#C7131F;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.identity_and_access_management;" vertex="1" parent="region">
-          <mxGeometry x="60" y="880" width="78" height="78" as="geometry" />
+        <mxCell id="iam" parent="region" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F54749;gradientDirection=north;fillColor=#C7131F;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.identity_and_access_management;" value="IAM&lt;br&gt;1 rôle par fonction Lambda" vertex="1">
+          <mxGeometry height="78" width="78" x="60" y="880" as="geometry" />
         </mxCell>
-
-        <mxCell id="cognito" value="Cognito User Pool&lt;br&gt;groupes : admin, editor, guest-author" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F54749;gradientDirection=north;fillColor=#C7131F;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;" vertex="1" parent="region">
-          <mxGeometry x="760" y="140" width="78" height="78" as="geometry" />
+        <mxCell id="cognito" parent="region" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F54749;gradientDirection=north;fillColor=#C7131F;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;" value="Cognito User Pool&lt;br&gt;groupes : admin, editor, guest-author" vertex="1">
+          <mxGeometry height="78" width="78" x="760" y="140" as="geometry" />
         </mxCell>
-
-        <mxCell id="cloudwatch" value="CloudWatch Logs" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F34482;gradientDirection=north;fillColor=#BC1356;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudwatch_2;" vertex="1" parent="region">
-          <mxGeometry x="760" y="450" width="78" height="78" as="geometry" />
+        <mxCell id="cloudwatch" parent="region" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F34482;gradientDirection=north;fillColor=#BC1356;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudwatch_2;" value="CloudWatch Logs&lt;br&gt;(toutes les fonctions)" vertex="1">
+          <mxGeometry height="78" width="78" x="760" y="450" as="geometry" />
         </mxCell>
-
-        <mxCell id="dynamodb" value="DynamoDB&lt;br&gt;table posts&lt;br&gt;index byStatus, byAuthor" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#4D72F3;gradientDirection=north;fillColor=#3334B9;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;" vertex="1" parent="region">
-          <mxGeometry x="760" y="760" width="78" height="78" as="geometry" />
+        <mxCell id="dynamodb" parent="region" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#4D72F3;gradientDirection=north;fillColor=#3334B9;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;" value="DynamoDB&lt;br&gt;table posts&lt;br&gt;index byStatus, byAuthor" vertex="1">
+          <mxGeometry height="78" width="78" x="760" y="760" as="geometry" />
         </mxCell>
-
-        <mxCell id="auth" value="Bloc Auth (Lambda Node.js 24, ARM)" style="rounded=1;arcSize=3;dashed=1;fillColor=none;strokeColor=#ED7100;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontColor=#232F3E;html=1;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="region">
-          <mxGeometry x="260" y="60" width="380" height="420" as="geometry" />
+        <mxCell id="auth" parent="region" style="rounded=1;arcSize=3;dashed=1;fillColor=none;strokeColor=#ED7100;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontColor=#232F3E;html=1;container=1;collapsible=0;recursiveResize=0;" value="Bloc Auth (Lambda Node.js 24, ARM)" vertex="1">
+          <mxGeometry height="420" width="380" x="260" y="60" as="geometry" />
         </mxCell>
-
-        <mxCell id="fn-register" value="&lt;b&gt;register&lt;/b&gt;&lt;br&gt;POST /auth/register" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="auth">
-          <mxGeometry x="20" y="45" width="36" height="36" as="geometry" />
+        <mxCell id="fn-register" parent="auth" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;register&lt;/b&gt;&lt;br&gt;POST /auth/register" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="fn-confirm" value="&lt;b&gt;confirmRegistration&lt;/b&gt;&lt;br&gt;POST /auth/confirm" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="auth">
-          <mxGeometry x="20" y="97" width="36" height="36" as="geometry" />
+        <mxCell id="fn-confirm" parent="auth" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;confirmRegistration&lt;/b&gt;&lt;br&gt;POST /auth/confirm" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="97" as="geometry" />
         </mxCell>
-        <mxCell id="fn-login" value="&lt;b&gt;login&lt;/b&gt;&lt;br&gt;POST /auth/login" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="auth">
-          <mxGeometry x="20" y="149" width="36" height="36" as="geometry" />
+        <mxCell id="fn-login" parent="auth" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;login&lt;/b&gt;&lt;br&gt;POST /auth/login" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="149" as="geometry" />
         </mxCell>
-        <mxCell id="fn-refresh" value="&lt;b&gt;refreshToken&lt;/b&gt;&lt;br&gt;POST /auth/refresh" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="auth">
-          <mxGeometry x="20" y="201" width="36" height="36" as="geometry" />
+        <mxCell id="fn-refresh" parent="auth" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;refreshToken&lt;/b&gt;&lt;br&gt;POST /auth/refresh" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="201" as="geometry" />
         </mxCell>
-        <mxCell id="fn-me" value="&lt;b&gt;me&lt;/b&gt;&lt;br&gt;GET /auth/me" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="auth">
-          <mxGeometry x="20" y="253" width="36" height="36" as="geometry" />
+        <mxCell id="fn-me" parent="auth" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;me&lt;/b&gt;&lt;br&gt;GET /auth/me" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="253" as="geometry" />
         </mxCell>
-        <mxCell id="fn-list-users" value="&lt;b&gt;listUsers&lt;/b&gt;&lt;br&gt;GET /users (admin)" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="auth">
-          <mxGeometry x="20" y="305" width="36" height="36" as="geometry" />
+        <mxCell id="fn-list-users" parent="auth" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;listUsers&lt;/b&gt;&lt;br&gt;GET /users (admin)" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="305" as="geometry" />
         </mxCell>
-        <mxCell id="fn-update-role" value="&lt;b&gt;updateUserRole&lt;/b&gt;&lt;br&gt;PATCH /users/{userId}/role (admin)" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="auth">
-          <mxGeometry x="20" y="357" width="36" height="36" as="geometry" />
+        <mxCell id="fn-update-role" parent="auth" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;updateUserRole&lt;/b&gt;&lt;br&gt;PATCH /users/{userId}/role (admin)" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="357" as="geometry" />
         </mxCell>
-
-        <mxCell id="posts" value="Bloc Posts (Lambda Node.js 24, ARM)" style="rounded=1;arcSize=3;dashed=1;fillColor=none;strokeColor=#ED7100;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontColor=#232F3E;html=1;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="region">
-          <mxGeometry x="260" y="540" width="380" height="480" as="geometry" />
+        <mxCell id="posts" parent="region" style="rounded=1;arcSize=3;dashed=1;fillColor=none;strokeColor=#ED7100;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontColor=#232F3E;html=1;container=1;collapsible=0;recursiveResize=0;" value="Bloc Posts (Lambda Node.js 24, ARM)" vertex="1">
+          <mxGeometry height="480" width="380" x="260" y="540" as="geometry" />
         </mxCell>
-
-        <mxCell id="fn-list-published" value="&lt;b&gt;listPublishedPosts&lt;/b&gt;&lt;br&gt;GET /posts (public)" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="45" width="36" height="36" as="geometry" />
+        <mxCell id="fn-list-published" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;listPublishedPosts&lt;/b&gt;&lt;br&gt;GET /posts (public)" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="fn-get-published" value="&lt;b&gt;getPublishedPost&lt;/b&gt;&lt;br&gt;GET /posts/{postId} (public)" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="97" width="36" height="36" as="geometry" />
+        <mxCell id="fn-get-published" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;getPublishedPost&lt;/b&gt;&lt;br&gt;GET /posts/{postId} (public)" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="97" as="geometry" />
         </mxCell>
-        <mxCell id="fn-list-posts" value="&lt;b&gt;listPosts&lt;/b&gt;&lt;br&gt;GET /manage/posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="149" width="36" height="36" as="geometry" />
+        <mxCell id="fn-list-posts" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;listPosts&lt;/b&gt;&lt;br&gt;GET /manage/posts" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="149" as="geometry" />
         </mxCell>
-        <mxCell id="fn-get-post" value="&lt;b&gt;getPost&lt;/b&gt;&lt;br&gt;GET /manage/posts/{postId}" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="201" width="36" height="36" as="geometry" />
+        <mxCell id="fn-get-post" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;getPost&lt;/b&gt;&lt;br&gt;GET /manage/posts/{postId}" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="201" as="geometry" />
         </mxCell>
-        <mxCell id="fn-create-post" value="&lt;b&gt;createPost&lt;/b&gt;&lt;br&gt;POST /manage/posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="253" width="36" height="36" as="geometry" />
+        <mxCell id="fn-create-post" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;createPost&lt;/b&gt;&lt;br&gt;POST /manage/posts" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="253" as="geometry" />
         </mxCell>
-        <mxCell id="fn-update-post" value="&lt;b&gt;updatePost&lt;/b&gt;&lt;br&gt;PATCH /manage/posts/{postId}" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="305" width="36" height="36" as="geometry" />
+        <mxCell id="fn-update-post" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;updatePost&lt;/b&gt;&lt;br&gt;PATCH /manage/posts/{postId}" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="305" as="geometry" />
         </mxCell>
-        <mxCell id="fn-delete-post" value="&lt;b&gt;deletePost&lt;/b&gt;&lt;br&gt;DELETE /manage/posts/{postId}" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="357" width="36" height="36" as="geometry" />
+        <mxCell id="fn-delete-post" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;deletePost&lt;/b&gt;&lt;br&gt;DELETE /manage/posts/{postId}" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="357" as="geometry" />
         </mxCell>
-        <mxCell id="fn-update-post-status" value="&lt;b&gt;updatePostStatus&lt;/b&gt;&lt;br&gt;PATCH /manage/posts/{postId}/status" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="posts">
-          <mxGeometry x="20" y="409" width="36" height="36" as="geometry" />
+        <mxCell id="fn-update-post-status" parent="posts" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;updatePostStatus&lt;/b&gt;&lt;br&gt;PATCH /manage/posts/{postId}/status" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="409" as="geometry" />
         </mxCell>
-
-        <mxCell id="e-client-apigw" value="HTTPS&lt;br&gt;Authorization: idToken" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="client" target="apigw">
+        <mxCell id="s3" parent="region" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#60A337;gradientDirection=north;fillColor=#277116;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" value="S3 (privé)&lt;br&gt;seul stockage des médias&lt;br&gt;media/{ownerId}/{mediaId}" vertex="1">
+          <mxGeometry height="78" width="78" x="870" y="1010" as="geometry" />
+        </mxCell>
+        <mxCell id="media" parent="region" style="rounded=1;arcSize=3;dashed=1;fillColor=none;strokeColor=#ED7100;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontColor=#232F3E;html=1;container=1;collapsible=0;recursiveResize=0;" value="Bloc Media (Lambda Node.js 24, ARM)" vertex="1">
+          <mxGeometry height="270" width="380" x="260" y="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="fn-create-media-upload" parent="media" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;createMediaUpload&lt;/b&gt;&lt;br&gt;POST /manage/media" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="fn-list-media" parent="media" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;listMedia&lt;/b&gt;&lt;br&gt;GET /manage/media" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="97" as="geometry" />
+        </mxCell>
+        <mxCell id="fn-get-media" parent="media" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;getMedia&lt;/b&gt;&lt;br&gt;GET /media/{ownerId}/{mediaId} (public)" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="149" as="geometry" />
+        </mxCell>
+        <mxCell id="fn-delete-media" parent="media" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=8;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="&lt;b&gt;deleteMedia&lt;/b&gt;&lt;br&gt;DELETE /manage/media/{ownerId}/{mediaId}" vertex="1">
+          <mxGeometry height="36" width="36" x="20" y="201" as="geometry" />
+        </mxCell>
+        <mxCell id="e-apigw-media" edge="1" parent="1" source="apigw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="media" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-apigw-auth" value="invoque" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="apigw" target="auth">
+        <mxCell id="e-media-s3" edge="1" parent="1" source="media" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.219;" target="s3" value="URL signées, liste,&lt;br&gt;suppression">
+          <mxGeometry relative="1" x="-0.2162" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1070" y="1239.1" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-client-s3" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=block;fontSize=11;exitX=0;exitY=0.5;" target="s3" value="fichiers via URL signées&lt;br&gt;(envoi direct, lecture)">
+          <mxGeometry relative="1" x="0.1154" as="geometry">
+            <Array as="points">
+              <mxPoint x="40" y="569" />
+              <mxPoint x="40" y="1140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-client-apigw" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="apigw" value="HTTPS&lt;br&gt;Authorization: idToken">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-apigw-posts" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="apigw" target="posts">
+        <mxCell id="e-apigw-auth" edge="1" parent="1" source="apigw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="auth" value="invoque">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-apigw-cognito" value="valide le token (authorizer)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;fontSize=11;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="apigw" target="cognito">
+        <mxCell id="e-apigw-posts" edge="1" parent="1" source="apigw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="posts" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-apigw-cognito" edge="1" parent="1" source="apigw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;fontSize=11;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" target="cognito" value="valide le token (authorizer)">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="299" y="115" />
@@ -109,16 +133,16 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-auth-cognito" value="comptes, tokens,&lt;br&gt;groupes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.283;entryX=0;entryY=0.5;" edge="1" parent="1" source="auth" target="cognito">
+        <mxCell id="e-auth-cognito" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.283;entryX=0;entryY=0.5;" target="cognito" value="comptes, tokens,&lt;br&gt;groupes">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-auth-cloudwatch" value="logs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;fontSize=11;exitX=1;exitY=0.95;entryX=0;entryY=0.115;" edge="1" parent="1" source="auth" target="cloudwatch">
+        <mxCell id="e-auth-cloudwatch" edge="1" parent="1" source="auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;fontSize=11;exitX=1;exitY=0.95;entryX=0;entryY=0.115;" target="cloudwatch" value="logs">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-posts-cloudwatch" value="logs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;fontSize=11;exitX=1;exitY=0.042;entryX=0.5;entryY=1;" edge="1" parent="1" source="posts" target="cloudwatch">
+        <mxCell id="e-posts-cloudwatch" edge="1" parent="1" source="posts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;fontSize=11;exitX=1;exitY=0.042;entryX=0.5;entryY=1;" target="cloudwatch" value="logs">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-posts-dynamodb" value="lecture / écriture" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.54;entryX=0;entryY=0.5;" edge="1" parent="1" source="posts" target="dynamodb">
+        <mxCell id="e-posts-dynamodb" edge="1" parent="1" source="posts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=11;exitX=1;exitY=0.54;entryX=0;entryY=0.5;" target="dynamodb" value="lecture / écriture">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
