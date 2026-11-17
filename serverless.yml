@@ -26,6 +26,10 @@ custom:
   # Bucket names are shared by all AWS accounts: the account id keeps it unique
   mediaBucket: ${self:service}-${sls:stage}-media-${aws:accountId}
 
+# One zip per function: each Lambda only downloads its own bundle on cold start
+package:
+  individually: true
+
 build:
   esbuild:
     # The SDK is left to the Lambda runtime, except the S3 presigners that it may

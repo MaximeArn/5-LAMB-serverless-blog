@@ -24,6 +24,10 @@ Le bucket des médias s'appelle `blogify-<stage>-media-<id du compte AWS>`. Clou
 aws s3 rm s3://blogify-dev-media-<id du compte AWS> --recursive --region eu-north-1
 ```
 
+## Packaging
+
+Chaque fonction est bundlée par esbuild et déployée dans son propre zip (`package.individually: true`) : une Lambda ne télécharge que son code au démarrage à froid (5 Ko à 1 Mo selon la fonction, contre 5,7 Mo pour un zip commun aux 19 fonctions) et ne contient pas celui des autres.
+
 ## Créer le premier admin
 
 Seul un admin peut changer un rôle via l'API, donc le premier se crée à la main :
